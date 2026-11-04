@@ -369,6 +369,14 @@ button{font:inherit}
 .sb-caption.live{animation:none}
 @keyframes sb-cap-in{0%{opacity:0}}
 @keyframes sb-cap-out{to{opacity:0}}
+.sb-caption{text-align:center}
+.sb-desc{
+  display:block;margin:8px auto 0;max-width:64ch;padding:0 16px;
+  font-size:16px;line-height:1.5;letter-spacing:.01em;text-transform:none;
+  font-weight:300;color:var(--ink-soft);
+  text-wrap:balance;
+}
+@media (max-width:640px){.sb-desc{font-size:14px;max-width:100%}}
 .sb-hint{
   margin:0;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);
   transition:opacity .4s ease;
@@ -556,6 +564,19 @@ const PAGES=[
 ];
 const M=PAGES.length, LAND=Math.min(6,M-1);
 
+/* the short line shown under each heading, matched by title */
+const DESC={
+  'Business Strategy':      'Define a clear direction and build a practical roadmap that positions your business for lasting growth, aligning every decision, investment, and priority with your long-term goals.',
+  'Management Consulting':  'Develop sharper leadership and stronger teams, with guidance that helps your organisation make confident decisions and move forward with clarity and purpose.',
+  'Market Research':        'Gain real insight into your customers, competitors, and market trends, so every move you make is backed by evidence rather than guesswork, and every opportunity is spotted early.',
+  'Financial Advisory':     'Sound budgeting, forecasting, and investment guidance that helps you protect and grow your capital, manage risk, and make confident financial decisions at every stage.',
+  'Operations Improvement': 'Streamlined processes that cut waste, save time, and raise quality across your business, helping teams work more efficiently, reduce costs, and deliver better results for customers.',
+  'Human Resources':        'Hiring, retention, and culture support to build a team that stays and performs, with fair policies, clear growth paths, and a workplace where people feel valued.',
+  'Digital Transformation': 'Modern tools and systems that make your business faster, smarter, and ready for what is next, replacing old processes with technology, automation, and data that help you work better and serve customers.',
+  'Marketing & Branding':   'A distinctive brand and campaigns that earn attention, trust, and loyal customers, telling your story across every channel and turning impressions into lasting relationships.',
+  'Training & Development': 'Skills programmes that turn capable people into confident leaders, building practical knowledge, communication, and lasting habits for success.'
+};
+
 /* Each photo is painted onto a paper spread (with a gutter shadow) so it
    sits inside the sketchbook exactly like the original page art. */
 async function composePages(){
@@ -705,12 +726,19 @@ function paint(){
 function caption(){
   capBox.textContent='';
   capOut=capIn=null;
+  const make=(i,cls)=>{
+    const p=el('p',cls);
+    p.appendChild(document.createTextNode(PAGES[i].title));
+    const d=el('span','sb-desc');d.textContent=DESC[PAGES[i].title]||'';
+    p.appendChild(d);
+    return p;
+  };
   if(turn){
-    capOut=el('p','sb-caption live');capOut.textContent=PAGES[turn.from].title;capBox.appendChild(capOut);
-    capIn=el('p','sb-caption live');capIn.textContent=PAGES[turn.to].title;capBox.appendChild(capIn);
+    capOut=make(turn.from,'sb-caption live');capBox.appendChild(capOut);
+    capIn=make(turn.to,'sb-caption live');capBox.appendChild(capIn);
     fadeCaption(turn.t);
   }else{
-    const p=el('p','sb-caption');p.textContent=PAGES[idx].title;capBox.appendChild(p);
+    capBox.appendChild(make(idx,'sb-caption'));
   }
 }
 let capOut=null,capIn=null;
